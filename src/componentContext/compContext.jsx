@@ -21,7 +21,7 @@ export const AuthTokenProvider = ({ children }) => {
     }
 
     return (
-        <authToken.Provider value={{ Token, saveToken, SaveBrandsGloblly, globleBrands }} >
+        <authToken.Provider value={{ Token, saveToken, SaveBrandsGloblly, globleBrands, setGlobleBrands }} >
             {children}
         </authToken.Provider>
     );

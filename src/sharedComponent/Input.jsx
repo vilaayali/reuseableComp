@@ -1,6 +1,6 @@
 import React from 'react'
 
-function SearchAbleInput({ type, placeholder, value, onChange }) {
+function Input({ type, placeholder, value, onChange }) {
     return (
         <>
             <input
@@ -13,4 +13,4 @@ function SearchAbleInput({ type, placeholder, value, onChange }) {
     )
 }
 
-export default SearchAbleInput
+export default Input;
