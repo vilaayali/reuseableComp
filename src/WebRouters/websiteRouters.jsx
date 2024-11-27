@@ -4,7 +4,7 @@ import { Routes, Route, } from "react-router-dom";
 const FirstPage = lazy(() => import('../Pages/firstPage'))
 const SecondPage = lazy(() => import('../Pages/secondPage'))
 const ThirdPage = lazy(() => import('../Pages/thirdPage'))
-const SharedComp = lazy(() => import('../sharedComponent/shared'))
+// const Sharedbtn = lazy(() => import('../sharedComponent/button'))
 
 function WebsiteRouters() {
     return (
@@ -14,7 +14,7 @@ function WebsiteRouters() {
                     <Route exact path='/firstpage' element={<FirstPage />} />
                     <Route exact path='/secondpage' element={<SecondPage />} />
                     <Route exact path='/thirdpage' element={<ThirdPage />} />
-                    <Route exact path='/sharedcomp' element={<SharedComp />} />
+
                 </Routes>
             </Suspense>
 
