@@ -6,11 +6,10 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { AuthTokenProvider } from './componentContext/compContext'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <AuthTokenProvider>
-      <App />
-    </AuthTokenProvider>
-  </React.StrictMode>
+  <AuthTokenProvider>
+    <App />
+  </AuthTokenProvider>
+
 );
 
 // If you want to start measuring performance in your app, pass a function

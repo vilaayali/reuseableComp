@@ -12,9 +12,15 @@ function ReuseableInput() {
 
 
     const fetchDefaultBrands = async () => {
+        let url = 'https://insta-stag-be.eztech.club/logistics/SearchAbleBrand/'
+        if (searchQuery) {
+            url += `?search=${searchQuery}`
+        }
+        console.log(url);
+
         try {
             const response = await axios.get(
-                `https://insta-stag-be.eztech.club/logistics/SearchAbleBrand/`,
+                url,
                 {
                     headers: {
                         Authorization: `token ${Token}`,
@@ -22,71 +28,65 @@ function ReuseableInput() {
                     },
                 }
             );
-            SaveBrandsGloblly(response.data);
-            setFilteredBrands(response.data);
+            return response.data;
         } catch (err) {
             console.error('Failed to fetch default brands:', err);
         }
     };
 
 
-    const fetchSearchResults = async (query) => {
-        try {
-            const response = await axios.get(
-                `https://insta-stag-be.eztech.club/logistics/brands/`,
-                {
-                    headers: {
-                        Authorization: `token ${Token}`,
-                        "content-type": "application/json",
-                    },
-                    params: { search: query },
-                }
-            );
-            setFilteredBrands(response.data);
-
-        }
-        catch (err) {
-            console.error('Failed to fetch search results:', err);
-        }
-    }
 
 
     useEffect(() => {
-        if (Token && globleBrands.length === 0) {
-            fetchDefaultBrands();
-        } else if (Token) {
-            setLocalBrands(globleBrands);
-            setFilteredBrands(globleBrands);
+        if (Token) {
+            const getBrands = async () => {
+                if (globleBrands.length === 0) {
+                    const data = await fetchDefaultBrands();
+                    if (data) {
+                        SaveBrandsGloblly(data)
+                        setLocalBrands(data);
+                        setFilteredBrands(data)
+                    }
+                } else {
+                    setLocalBrands(globleBrands);
+                }
+            }
+            getBrands()
+
         }
+
     }, [Token, globleBrands]);
+
 
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            if (!searchQuery.trim()) {
-
-                setFilteredBrands(localBrands);
-            } else {
-
-                const filtered = localBrands.filter((brand) =>
-                    brand.name.toLowerCase().includes(searchQuery.toLowerCase())
-                );
-                if (filtered.length > 0) {
-                    setFilteredBrands(filtered);
+            const fetchBrandSearch = async () => {
+                if (searchQuery) {
+                    const fetchedData = await fetchDefaultBrands();
+                    setFilteredBrands(fetchedData);
                 } else {
-                    fetchSearchResults(searchQuery);
+                    const filtered = localBrands.filter((brand) =>
+                        brand.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
                 }
             }
-        }, 1000);
+            fetchBrandSearch();
+
+        }, 700);
 
         return () => clearTimeout(debounceTimer);
     }, [searchQuery, localBrands]);
+
 
 
     const handleInputChange = (event, value) => {
         setSearchQuery(value);
     };
 
+    // console.log("local", localBrands, " globle", globleBrands);
+    // console.log('search query', searchQuery);
+    // console.log('Filtered', filteredBrands);
 
 
     return (
@@ -95,9 +95,8 @@ function ReuseableInput() {
             <Autocomplete
                 options={filteredBrands}
                 getOptionLabel={(option) => option.name || ''}
-                value={searchQuery}
+                inputValue={searchQuery}
                 onInputChange={handleInputChange}
-
                 renderInput={(params) => (
                     <TextField
                         {...params}
