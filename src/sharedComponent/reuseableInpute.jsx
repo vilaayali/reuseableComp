@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../componentContext/compContext';
 import axios from 'axios';
 
-
 function ReuseableInput() {
-    // const [brands, setBrands] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [localBrands, setLocalBrands] = useState([]);
     const { Token, SaveBrandsGloblly, globleBrands } = useAuth();
+
 
     const fetchBrands = async () => {
         try {
@@ -16,62 +16,68 @@ function ReuseableInput() {
                     headers: {
                         Authorization: `token ${Token}`,
                         "content-type": "application/json",
-                    }
+                    },
                 }
             );
-            // setBrands(response.data);
-            SaveBrandsGloblly(response.data)
-            return response;
-
+            SaveBrandsGloblly(response.data);
+            setLocalBrands(response.data);
         } catch (err) {
-            console.error('Failed', err);
+            console.error('Failed to fetch brands:', err);
         }
     };
 
+
     useEffect(() => {
-        const getbrands = async () => {
-            if (!Token) {
-                console.error('No token available');
-                return;
-            }
+        if (!Token || globleBrands.length > 0) return;
+        fetchBrands();
+    }, [Token, globleBrands]);
 
-            if (globleBrands.length === 0) {
-                const brand = await fetchBrands();
-                console.log("brands", brand);
-            }
+
+    const handleInputChange = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+
+        if (query) {
+            const filtered = globleBrands.filter((brand) =>
+                brand.name.toLowerCase().includes(query.toLowerCase())
+            );
+            setLocalBrands(filtered);
+            console.log('filtered brands from local', filtered);
+
+        } else {
+            setLocalBrands(globleBrands);
         }
-        getbrands()
+    };
 
-    }, [Token, globleBrands])
 
-    const searchBrands = globleBrands.filter((items) =>
-        items.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const handelInpute = ((e) => { setSearchQuery(e.target.value) })
+    const handleFocus = () => {
+        if (localBrands.length === 0) {
+            setLocalBrands(globleBrands);
+        }
+    };
 
     return (
-        <>
-            <span> </span>
-            <span> </span>
+        <div>
             <h1>Brands List</h1>
-            <input type="text"
+            <input
+                type="text"
                 value={searchQuery}
-                placeholder='Search'
-                onChange={handelInpute}
+                placeholder="Search"
+                onChange={handleInputChange}
+                onFocus={handleFocus}
             />
-
-            {searchBrands.length > 0 ? (
+            {localBrands.length > 0 ? (
                 <ul>
-                    {searchBrands.map((brand) => (
+                    {localBrands.map((brand) => (
                         <li key={brand.id}>{brand.name}</li>
                     ))}
                 </ul>
             ) : (
                 <p>No brands found or user not authenticated.</p>
             )}
-        </>
-    )
+        </div>
+    );
 }
 
 export default ReuseableInput;
