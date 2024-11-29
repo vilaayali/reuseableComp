@@ -65,10 +65,12 @@ function ReuseableInput() {
                 if (searchQuery) {
                     const fetchedData = await fetchDefaultBrands();
                     setFilteredBrands(fetchedData);
-                } else {
-                    const filtered = localBrands.filter((brand) =>
-                        brand.name.toLowerCase().includes(searchQuery.toLowerCase())
-                    );
+                }
+                else {
+                    setFilteredBrands(globleBrands)
+                    // const filtered = localBrands.filter((brand) =>
+                    //     brand.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    // );
                 }
             }
             fetchBrandSearch();
